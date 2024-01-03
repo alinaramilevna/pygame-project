@@ -3,11 +3,11 @@ import sys
 import pygame
 
 FPS = 50
-SIZE = WIDTH, HEIGHT = 400, 500
+SIZE = WIDTH, HEIGHT = 600, 450
+tile_width, tile_height = 45, 45
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
-tile_width = tile_height = 50
 
 
 def load_image(name, colorkey=None):
@@ -46,7 +46,7 @@ def load_level(filename):
 
 
 def generate_level(level):
-    w, h = 30, 30
+    w, h = tile_width, tile_height
     new_player, x, y = None, None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
@@ -92,13 +92,34 @@ class Tile(pygame.sprite.Sprite):
             super().__init__(tiles_group, all_sprites, ladders_group)
         else:
             super().__init__(tiles_group, all_sprites)
-        self.image = tile_images[tile_type]
+        self.image = pygame.transform.scale(tile_images[tile_type], (tile_width, tile_height))
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class Player(pygame.sprite.Sprite):
-    pass
+    def __init__(self, pos_x, pos_y):
+        super().__init__(player_group, all_sprites)
+        self.image = pygame.transform.scale(load_image('player/person.png', colorkey=(255, 255, 255)),
+                                            (tile_height, tile_width))
+        self.rect = self.image.get_rect()
+        # вычисляем маску для эффективного сравнения
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self, move_type: str):
+        old = self.rect.copy()
+        if move_type is not None:
+            if move_type == 'right':
+                self.rect.x += tile_width
+            elif move_type == 'left':
+                self.rect.x -= tile_width
+            elif move_type == 'up':
+                self.rect.y -= tile_height
+            elif move_type == 'down':
+                self.rect.y += tile_height
+        if pygame.sprite.spritecollideany(self, walls_group):
+            self.rect = old
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -109,8 +130,21 @@ class Star(pygame.sprite.Sprite):
     pass
 
 
-class Camera(pygame.sprite.Sprite):
-    pass
+class Camera:
+    # зададим начальный сдвиг камеры
+    def __init__(self):
+        self.dx = 0
+        self.dy = 0
+
+    # сдвинуть объект obj на смещение камеры
+    def apply(self, obj):
+        obj.rect.x += self.dx
+        obj.rect.y += self.dy
+
+    # позиционировать камеру на объекте target
+    def update(self, target):
+        self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
+        self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
 
 
 def level_selection(surface, width, height):
@@ -171,7 +205,7 @@ if __name__ == '__main__':
     all_sprites = pygame.sprite.Group()
     try:
         map_name = level_selection(screen, WIDTH, HEIGHT)
-        player, level_x, level_y = generate_level(load_level(map_name))  # map_name вводиться в 44 строчке
+        player, level_x, level_y = generate_level(load_level(map_name))
         camera = Camera()
         move_type = None
     except FileNotFoundError:
