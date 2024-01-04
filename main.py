@@ -2,9 +2,11 @@ import os
 import sys
 import pygame
 
-FPS = 50
+FPS = 30
 SIZE = WIDTH, HEIGHT = 600, 450
 tile_width, tile_height = 45, 45
+GRAVITY = 0.7
+jump_power = tile_width * 1.5
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -12,7 +14,6 @@ screen = pygame.display.set_mode(SIZE)
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -34,14 +35,9 @@ def terminate():
 
 def load_level(filename):
     filename = "data/" + filename
-    # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
-
-    # и подсчитываем максимальную длину
     max_width = max(map(len, level_map))
-
-    # дополняем каждую строку пустыми клетками ('.')
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
@@ -63,7 +59,7 @@ def generate_level(level):
             elif level[y][x] == '#':
                 Tile('earth', x, y, w, h)
             elif level[y][x] == '@':
-                xp, yp = x, y
+                xp, yp = x * w, y * h
     # вернем игрока, а также размер поля в клетках
     new_player = Player(xp, yp)
     return new_player, x, y
@@ -104,22 +100,68 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(load_image('player/person.png', colorkey=(255, 255, 255)),
                                             (tile_height, tile_width))
         self.rect = self.image.get_rect()
-        # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
+        self.yvel = 0  # скорость вертикального перемещения
+        self.vy = 0  # скорость падения
+        self.is_jump = False
+        self.vx = tile_width
 
     def update(self, move_type: str):
-        old = self.rect.copy()
+        self.gravitation()
         if move_type is not None:
             if move_type == 'right':
-                self.rect.x += tile_width
+                self.step_right()
             elif move_type == 'left':
-                self.rect.x -= tile_width
-            elif move_type == 'up':
-                self.rect.y -= tile_height
+                self.step_left()
+            elif move_type == 'up_the_ladder':
+                self.go_up_the_ladder()
             elif move_type == 'down':
-                self.rect.y += tile_height
+                self.go_down_the_ladder()
+            elif move_type == 'jump':
+                self.jump()
+
+    def step_right(self):
+        old = self.rect.copy()
+        self.rect.x += self.vx if not self.is_jump else self.vx * 2
         if pygame.sprite.spritecollideany(self, walls_group):
             self.rect = old
+
+    def step_left(self):
+        old = self.rect.copy()
+        self.rect.x -= self.vx if not self.is_jump else self.vx * 2
+        if pygame.sprite.spritecollideany(self, walls_group):
+            self.rect = old
+
+    def go_down_the_ladder(self):
+        old = self.rect.copy()
+        if pygame.sprite.spritecollideany(self, ladders_group):
+            self.rect.y += tile_height
+            if pygame.sprite.spritecollideany(self, walls_group):
+                self.rect = old
+
+    def go_up_the_ladder(self):
+        if pygame.sprite.spritecollideany(self, ladders_group):
+            self.rect.y -= tile_height
+        else:
+            self.jump()
+
+    def jump(self):
+        old = self.rect.copy()
+        self.rect.y += tile_height
+        self.is_jump = True
+        if pygame.sprite.spritecollideany(self, walls_group):
+            self.rect = old
+            self.rect.y -= jump_power
+
+    def gravitation(self):
+        # чтобы герой не левитировал
+        if not pygame.sprite.spritecollideany(self, ladders_group):
+            old = self.rect.copy()
+            self.vy += GRAVITY
+            self.rect.y += self.vy
+            if pygame.sprite.spritecollideany(self, walls_group):
+                self.rect = old
+                self.vy = 0
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -131,17 +173,14 @@ class Star(pygame.sprite.Sprite):
 
 
 class Camera:
-    # зададим начальный сдвиг камеры
     def __init__(self):
         self.dx = 0
         self.dy = 0
 
-    # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
         obj.rect.x += self.dx
         obj.rect.y += self.dy
 
-    # позиционировать камеру на объекте target
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
@@ -192,7 +231,6 @@ def level_selection(surface, width, height):
 
 if __name__ == '__main__':
     running = True
-    fps = 30
     clock = pygame.time.Clock()
 
     tiles_group = pygame.sprite.Group()
@@ -203,6 +241,7 @@ if __name__ == '__main__':
     saw_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
+
     try:
         map_name = level_selection(screen, WIDTH, HEIGHT)
         player, level_x, level_y = generate_level(load_level(map_name))
@@ -226,9 +265,11 @@ if __name__ == '__main__':
             elif keys[pygame.K_LEFT]:
                 move_type = 'left'
             elif keys[pygame.K_UP]:
-                move_type = 'up'
+                move_type = 'up_the_ladder'
             elif keys[pygame.K_DOWN]:
                 move_type = 'down'
+            elif keys[pygame.K_SPACE]:
+                move_type = 'jump'
 
         all_sprites.update(move_type)
         move_type = None
@@ -239,5 +280,5 @@ if __name__ == '__main__':
         for sprite in all_sprites:
             camera.apply(sprite)
 
-        clock.tick(fps)
+        clock.tick(FPS)
         pygame.display.flip()
