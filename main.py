@@ -6,7 +6,7 @@ FPS = 30
 SIZE = WIDTH, HEIGHT = 600, 450
 tile_width, tile_height = 45, 45
 GRAVITY = 0.7
-jump_power = tile_width * 1.5
+jump_power = tile_width * 1.7
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -78,7 +78,7 @@ tile_images = {
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y, tile_width, tile_height):
         '''Здесь будет вся неживая природа'''
-        if tile_type in ['grass', 'earth', 'platforms']:
+        if tile_type in ['grass', 'earth', 'platform']:
             super().__init__(tiles_group, all_sprites, walls_group)
         elif tile_type == 'fire':
             super().__init__(tiles_group, all_sprites, fire_group)
@@ -101,13 +101,18 @@ class Player(pygame.sprite.Sprite):
                                             (tile_height, tile_width))
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
+
         self.yvel = 0  # скорость вертикального перемещения
         self.vy = 0  # скорость падения
         self.is_jump = False
         self.vx = tile_width
 
+        self.health = 100
+        self.damage = 20
+
     def update(self, move_type: str):
         self.gravitation()
+        self.draw_health()
         if move_type is not None:
             if move_type == 'right':
                 self.step_right()
@@ -125,12 +130,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.vx if not self.is_jump else self.vx * 2
         if pygame.sprite.spritecollideany(self, walls_group):
             self.rect = old
+            self.is_jump = False
 
     def step_left(self):
         old = self.rect.copy()
         self.rect.x -= self.vx if not self.is_jump else self.vx * 2
         if pygame.sprite.spritecollideany(self, walls_group):
             self.rect = old
+            self.is_jump = False
 
     def go_down_the_ladder(self):
         old = self.rect.copy()
@@ -152,6 +159,7 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollideany(self, walls_group):
             self.rect = old
             self.rect.y -= jump_power
+            self.is_jump = False
 
     def gravitation(self):
         # чтобы герой не левитировал
@@ -162,6 +170,17 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(self, walls_group):
                 self.rect = old
                 self.vy = 0
+
+    def draw_health(self):
+        rect = pygame.Rect(WIDTH // 10, HEIGHT // 16, WIDTH // 2 - WIDTH // 8, HEIGHT // 14)
+        pygame.draw.rect(screen, 'black', rect, 2)
+
+        im = load_image('other/heart.png', colorkey=-1)
+        curr_x, curr_y = WIDTH // 15, HEIGHT // 24
+        for _ in range((self.health + 9) // 10):
+            screen.blit(im, (curr_x, curr_y))
+            curr_x += WIDTH // 27
+
 
 
 class Enemy(pygame.sprite.Sprite):
