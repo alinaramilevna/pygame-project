@@ -106,8 +106,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
+        self.is_grounded = False
 
     def update(self, move_type: str):
+        self.check_grounded()
+        self.gravitation()
         old = self.rect.copy()
         if move_type is not None:
             if move_type == 'right':
@@ -115,11 +118,27 @@ class Player(pygame.sprite.Sprite):
             elif move_type == 'left':
                 self.rect.x -= tile_width
             elif move_type == 'up':
-                self.rect.y -= tile_height
+                self.jump()
             elif move_type == 'down':
                 self.rect.y += tile_height
         if pygame.sprite.spritecollideany(self, walls_group):
             self.rect = old
+
+    def check_grounded(self):
+        self.rect.y += 10
+        if pygame.sprite.spritecollideany(self, walls_group) or pygame.sprite.spritecollideany(self, ladders_group):
+            self.is_grounded = True
+        else:
+            self.is_grounded = False
+        self.rect.y -= 10
+
+    def gravitation(self):
+        if not self.is_grounded:
+            self.rect.y += 10
+
+    def jump(self):
+        if self.is_grounded:
+            self.rect.y -= tile_height * 2
 
 
 class Enemy(pygame.sprite.Sprite):
