@@ -295,22 +295,16 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__(enemy_group)
 
         self.health = 40
-        self.damage = 10
+        self.damage = 3
         self.vx = randrange(1, 4)
 
         self.frames = []
         self.frames_l = []
-        self.frames_shot = []
-        self.frames_shot_l = []
-
-        self.cut_sheet(self.frames_shot, load_image('enemy/shot.png'), 8, 1)
-        self.cut_sheet(self.frames_shot_l, pygame.transform.flip(load_image('enemy/walking.png'), True, False), 8, 1)
 
         self.cut_sheet(self.frames, load_image('enemy/walking.png'), 7, 1)
         self.cut_sheet(self.frames_l, pygame.transform.flip(load_image('enemy/walking.png'), True, False), 7, 1)
         self.cur_frame = 0
-        self.attack_frame = 0
-        self.is_attack = False
+        self.attack_time_cnt = 0
 
         self.image = self.frames[self.cur_frame]
         self.rect = self.rect.move(pos_x, pos_y)
@@ -350,17 +344,9 @@ class Enemy(pygame.sprite.Sprite):
 
     def attack(self):
         for player in player_group:
-            if abs(player.rect.x - self.rect.x) <= 70 and abs(self.rect.y - player.rect.y) <= 50:
-                if not self.is_attack:
-                    self.cur_frame = 0
-                    self.attack_frame = 0
-                    self.is_attack = True
-                else:
-                    self.attack_frame = (self.attack_frame + 1) % len(self.frames_shot)
-                if self.image in self.frames:
-                    self.image = self.frames_shot[self.attack_frame]
-                elif self.image in self.frames_l:
-                    self.image = self.frames_shot_l[self.attack_frame]
+            if pygame.sprite.collide_mask(self, player):
+                self.attack_time_cnt += 1
+                player.health -= self.damage if self.attack_time_cnt % 10 == 0 else 0
 
 
 class Star(pygame.sprite.Sprite):
