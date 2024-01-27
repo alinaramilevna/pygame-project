@@ -190,27 +190,30 @@ class Player(pygame.sprite.Sprite):
                 self.attack()
         self.cur_frame = self.frames[self.status[-1]][self.frames_cnt % len(self.frames[self.status[-1]])]
         self.image = self.cur_frame
-        # self.mask = pygame.mask.from_surface(self.image)
         self.status.append('stand' if self.status[-1][-1] != 'l' else 'stand_l')
 
     def step_right(self):
         old = self.rect.copy()
-        self.rect = self.rect.move(self.vx, 0) if not self.is_jump else self.rect.move(1, 0)
-        if pygame.sprite.spritecollideany(self, walls_group):
-            self.rect = old
-            self.is_jump = False
+        self.rect.x += self.vx
+        for wall in walls_group:
+            if pygame.sprite.collide_mask(self, wall):
+                self.rect = old
+                self.is_jump = False
+                return
 
     def step_left(self):
         old = self.rect.copy()
-        self.rect = self.rect.move(-self.vx, 0) if not self.is_jump else self.rect.move(-1, 0)
-        if pygame.sprite.spritecollideany(self, walls_group):
-            self.rect = old
-            self.is_jump = False
+        self.rect.x -= self.vx
+        for wall in walls_group:
+            if pygame.sprite.collide_mask(self, wall):
+                self.rect = old
+                self.is_jump = False
+                return
 
     def go_down_the_ladder(self):
         old = self.rect.copy()
         if pygame.sprite.spritecollideany(self, ladders_group):
-            self.rect.y = self.rect.move(0, self.vy)
+            self.rect = self.rect.move(0, self.vy)
             if pygame.sprite.spritecollideany(self, walls_group):
                 self.rect = old
 
