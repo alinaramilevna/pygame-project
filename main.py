@@ -62,6 +62,8 @@ def generate_level(level):
                 Tile('earth', x, y, w, h)
             elif level[y][x] == '*':
                 Enemy(x, y)
+            elif level[y][x] == 's':
+                Star(x, y)
             elif level[y][x] == '@':
                 xp, yp = x * w, y * h
     # вернем игрока, а также размер поля в клетках
@@ -86,8 +88,6 @@ class Tile(pygame.sprite.Sprite):
             super().__init__(tiles_group, all_sprites, walls_group)
         elif tile_type == 'fire':
             super().__init__(tiles_group, all_sprites, fire_group)
-        elif tile_type == 'saw':
-            super().__init__(tiles_group, all_sprites, saw_group)
         elif tile_type == 'ladder':
             super().__init__(tiles_group, all_sprites, ladders_group)
         else:
@@ -127,6 +127,7 @@ class Player(pygame.sprite.Sprite):
 
         self.health = 100
         self.damage = 20
+        self.star_cnt = 0
 
     def load_images(self):
         for key in self.frames:
@@ -163,6 +164,7 @@ class Player(pygame.sprite.Sprite):
     def update(self, move_type):
         self.frames_cnt += 1
         self.check_collision_y()
+        self.check_stars()
 
         if self.health <= 0:
             self.death()
@@ -291,6 +293,12 @@ class Player(pygame.sprite.Sprite):
             if enemy.health <= 0:
                 enemy.kill()
 
+    def check_stars(self):
+        for star in stars_group:
+            if pygame.sprite.collide_mask(self, star):
+                self.star_cnt += 1
+                star.kill()
+
 
 def draw_health(obj: Player):
     rect = pygame.Rect(WIDTH // 10, HEIGHT // 16, WIDTH // 2 - WIDTH // 8, HEIGHT // 14)
@@ -301,6 +309,15 @@ def draw_health(obj: Player):
     for _ in range(int((obj.health + 9) // 10)):
         screen.blit(im, (curr_x, curr_y))
         curr_x += WIDTH // 27
+
+
+class Star(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(stars_group)
+        self.image = pygame.transform.scale(load_image('other/star.png'), (tile_height // 2, tile_width // 2))
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -361,10 +378,6 @@ class Enemy(pygame.sprite.Sprite):
                 self.attack_time_cnt += 1
                 player.health -= self.damage if self.attack_time_cnt % 10 == 0 else 0
                 player.hurt()
-
-
-class Star(pygame.sprite.Sprite):
-    pass
 
 
 class Camera:
@@ -493,11 +506,14 @@ def start_game():
     player_group.draw(screen)
     enemy_group.update(player)
     enemy_group.draw(screen)
+    stars_group.draw(screen)
     camera.update(player)
 
     for sprite in all_sprites:
         camera.apply(sprite)
     for sprite in enemy_group:
+        camera.apply(sprite)
+    for sprite in stars_group:
         camera.apply(sprite)
 
     clock.tick(FPS)
@@ -508,13 +524,14 @@ if __name__ == '__main__':
     running = True
     clock = pygame.time.Clock()
 
+    # мне кажется в этом создании миллиона групп явно что-то не так
     tiles_group = pygame.sprite.Group()
     walls_group = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
     ladders_group = pygame.sprite.Group()
     fire_group = pygame.sprite.Group()
-    saw_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
+    stars_group = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
 
     try:
