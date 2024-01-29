@@ -119,6 +119,7 @@ class Player(pygame.sprite.Sprite):
         self.is_jump = False
         self.jump_cnt = 0
         self.vy = 0
+
         # stand - стоит, attack - атакует, hurt - получает урон, jump - прыгает, walking - идет; аналогично с walking_l и др
         self.status = ['stand', 'stand']
 
@@ -152,25 +153,37 @@ class Player(pygame.sprite.Sprite):
                     frame_location, self.rect.size)))
         return frames
 
+    def death(self):  # TODO
+        self.kill()
+
+    def hurt(self):
+        self.health -= 0.1
+        self.status.append('hurt_l' if '_l' in self.status[-2] else 'hurt')
+
     def update(self, move_type: str):
         self.frames_cnt += 1
         self.check_collision_y()
+
         if self.health <= 0:
-            self.kill()
-        self.gravitation()
+            self.death()
+
         if move_type is not None:
+
             if move_type == 'right':
                 if self.status[-2] != 'walking':
                     self.frames_cnt = 0
                 self.step_right()
                 self.status.append('walking')
+
             elif move_type == 'left':
                 if self.status[-2] != 'walking_l':
                     self.frames_cnt = 0
                 self.step_left()
                 self.status.append('walking_l')
+
             elif move_type == 'down':
                 self.go_down_the_ladder()
+
             elif move_type == 'jump':
                 if pygame.sprite.spritecollideany(self, ladders_group):
                     self.go_up_the_ladder()
@@ -179,15 +192,19 @@ class Player(pygame.sprite.Sprite):
                         self.frames_cnt = 0
                     self.jump()
                     self.status.append('jump')
+
             elif move_type == 'attack':
                 if self.status[-2][-1] == 'l':
                     status = 'attack_l'
                 else:
                     status = 'attack'
+
                 if self.status[-2] != status:
                     self.frames_cnt = 0
                 self.status.append(status)
                 self.attack()
+
+        self.gravitation()
         self.cur_frame = self.frames[self.status[-1]][self.frames_cnt % len(self.frames[self.status[-1]])]
         self.image = self.cur_frame
         self.status.append('stand' if self.status[-1][-1] != 'l' else 'stand_l')
@@ -211,65 +228,61 @@ class Player(pygame.sprite.Sprite):
                 return
 
     def go_down_the_ladder(self):
-        old = self.rect.copy()
-        if pygame.sprite.spritecollideany(self, ladders_group):
-            self.rect = self.rect.move(0, self.vy)
-            if pygame.sprite.spritecollideany(self, walls_group):
-                self.rect = old
+        self.rect.y += tile_height
+        for ladder in ladders_group:
+            if pygame.sprite.collide_mask(self, ladder):
+                for wall in walls_group:
+                    while pygame.sprite.collide_mask(self, wall):
+                        self.rect.y -= 1
+                return
+        else:
+            self.rect.y -= tile_height
 
     def go_up_the_ladder(self):
         self.rect.y -= tile_height // 2
 
     def jump(self):
-        if self.is_grounded:
-            self.vy = -GRAVITY * 3
+        self.rect.y += 2
+        if pygame.sprite.spritecollideany(self, tiles_group):
             self.is_jump = True
+            self.vy = 1
+            self.jump_cnt = 0
+        else:
+            self.is_jump = False
+        self.rect.y -= 2
 
     def check_collision_y(self):
-        self.rect.y += 10
-
-        # есть ли опора снизу
-        if pygame.sprite.spritecollideany(self, walls_group) or \
-                pygame.sprite.spritecollideany(self, ladders_group) or pygame.sprite.spritecollideany(self, fire_group):
-            self.is_grounded = True
-            self.vy = 0
-        else:
-            self.is_grounded = False
-        self.rect.y -= 10
-
         # есть ли что-то сверху
-        self.rect.y -= 2
+        self.rect.y -= tile_height
         if pygame.sprite.spritecollideany(self, walls_group) or \
                 pygame.sprite.spritecollideany(self, ladders_group) or pygame.sprite.spritecollideany(self, fire_group):
-            self.rect.y += 2
+            self.rect.y += tile_height
             self.ис_ударилась_головой_об_что_нибудь_сверху = True
             self.vy = -self.vy
             self.is_jump = False
         else:
-            self.rect.y += 2
+            self.rect.y += tile_height
             self.ис_ударилась_головой_об_что_нибудь_сверху = False
 
-        self.rect.y += 10
-        if pygame.sprite.spritecollideany(self, fire_group):
-            self.health -= 0.5
-        self.rect.y -= 10
-
     def gravitation(self):
-        if not self.is_grounded and not self.is_jump:
-            self.vy += GRAVITY
-            self.rect.y += self.vy - 3
-        elif self.is_jump and not self.ис_ударилась_головой_об_что_нибудь_сверху and self.jump_cnt < 50:
+        if self.is_jump and self.jump_cnt <= 60:
             self.vy -= GRAVITY
             self.rect.y += self.vy
-            self.jump_cnt += 4
-        elif self.jump_cnt >= 30:
-            self.is_jump = False
-            self.jump_cnt = 0
-        # чтобы не застревала в текстурах
-        while pygame.sprite.spritecollideany(self,
-                                             walls_group) and not self.ис_ударилась_головой_об_что_нибудь_сверху or \
-                pygame.sprite.spritecollideany(self, fire_group):
-            self.rect.y -= 1
+            self.jump_cnt += 5
+            if pygame.sprite.spritecollideany(self, tiles_group):
+                self.rect.y -= self.vy
+                self.vy = 0
+                self.is_jump = False
+                self.jump_cnt = 0
+        else:
+            self.vy += GRAVITY
+            self.rect.y += self.vy
+            if pygame.sprite.spritecollideany(self, tiles_group):
+                if pygame.sprite.spritecollideany(self, fire_group):
+                    self.hurt()
+                self.rect.y -= self.vy
+                self.vy = 0
+                return
 
     def attack(self):
         for enemy in enemy_group:
@@ -347,6 +360,7 @@ class Enemy(pygame.sprite.Sprite):
             if pygame.sprite.collide_mask(self, player):
                 self.attack_time_cnt += 1
                 player.health -= self.damage if self.attack_time_cnt % 10 == 0 else 0
+                player.hurt()
 
 
 class Star(pygame.sprite.Sprite):
