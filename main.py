@@ -160,7 +160,7 @@ class Player(pygame.sprite.Sprite):
         self.health -= 0.1
         self.status.append('hurt_l' if '_l' in self.status[-2] else 'hurt')
 
-    def update(self, move_type: str):
+    def update(self, move_type):
         self.frames_cnt += 1
         self.check_collision_y()
 
