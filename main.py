@@ -13,6 +13,8 @@ jump_power = tile_width * 1.7
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
 
+pygame.mixer.music.load("data/sounds/game_music.mp3")
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -62,6 +64,8 @@ def generate_level(level):
                 Tile('earth', x, y, w, h)
             elif level[y][x] == '*':
                 Enemy(x, y)
+            elif level[y][x] == 's':
+                Star(x, y)
             elif level[y][x] == '@':
                 xp, yp = x * w, y * h
     # вернем игрока, а также размер поля в клетках
@@ -127,6 +131,7 @@ class Player(pygame.sprite.Sprite):
 
         self.health = 100
         self.damage = 20
+        self.star_cnt = 0
 
     def load_images(self):
         for key in self.frames:
@@ -160,9 +165,16 @@ class Player(pygame.sprite.Sprite):
         self.health -= 0.1
         self.status.append('hurt_l' if '_l' in self.status[-2] else 'hurt')
 
+    def check_stars(self):
+        for star in stars_group:
+            if pygame.sprite.collide_mask(self, star):
+                self.star_cnt += 1
+                star.kill()
+
     def update(self, move_type):
         self.frames_cnt += 1
         self.check_collision_y()
+        self.check_stars()
 
         if self.health <= 0:
             self.death()
@@ -364,7 +376,12 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Star(pygame.sprite.Sprite):
-    pass
+    def __init__(self, pos_x, pos_y):
+        super().__init__(stars_group)
+        self.image = pygame.transform.scale(load_image('other/star.png'), (tile_height // 2, tile_width // 2))
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class Camera:
@@ -470,10 +487,10 @@ def passed_the_level_screen(surface, width, height):
 
 def start_game():
     global running, move_type
+
     screen.fill('black')
     fon = pygame.transform.scale(load_image('other/background.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
-    draw_health(player)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -498,12 +515,16 @@ def start_game():
     enemy_group.update(player)
     enemy_group.draw(screen)
     camera.update(player)
+    stars_group.draw(screen)
 
     for sprite in all_sprites:
         camera.apply(sprite)
     for sprite in enemy_group:
         camera.apply(sprite)
+    for sprite in stars_group:
+        camera.apply(sprite)
 
+    draw_health(player)
     clock.tick(FPS)
     pygame.display.flip()
 
@@ -512,6 +533,7 @@ if __name__ == '__main__':
     running = True
     clock = pygame.time.Clock()
 
+    # мне кажется в этом создании миллиона групп явно что-то не так
     tiles_group = pygame.sprite.Group()
     walls_group = pygame.sprite.Group()
     player_group = pygame.sprite.Group()
@@ -520,6 +542,7 @@ if __name__ == '__main__':
     saw_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
+    stars_group = pygame.sprite.Group()
 
     try:
         # map_name = level_selection(screen, WIDTH, HEIGHT)
@@ -531,5 +554,6 @@ if __name__ == '__main__':
         print('Файл не найден')
         sys.exit()
 
+    pygame.mixer.music.play(-1)
     while running:
         start_game()
