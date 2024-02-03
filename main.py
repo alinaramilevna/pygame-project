@@ -8,8 +8,6 @@ import pygame
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
 
-pygame.mixer.music.load("data/sounds/game_music.mp3")
-
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -154,6 +152,8 @@ class Player(pygame.sprite.Sprite):
         return frames
 
     def death(self):  # TODO
+        global player_died
+        player_died = True
         self.kill()
 
     def hurt(self):
@@ -439,48 +439,19 @@ def level_selection(surface, width, height):
 
 
 def screen_of_death(surface, width, height):
-    '''Выбор уровня'''
-    intro_text = ['Вы умерли!',
-                  'Попробовать снова',
-                  'Выход']
-
-    fon = pygame.transform.scale(load_image('start_screen.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('other/screen_of_death.jpg'), (width, height))
     surface.blit(fon, (0, 0))
-
-    curr_x, curr_y = 70, 100
-    rect_w, rect_h = 130, 40
-    distance_rect = 60
-    for i in range(2):
-        rect = pygame.Rect(curr_x, curr_y, rect_w, rect_h)
-        pygame.draw.rect(surface, pygame.Color('dark blue'), rect, 0)
-        curr_y += distance_rect
-
-    font = pygame.font.Font(None, 30)
-    text_coord = 65
-    distance_text = 43
-    for line in intro_text:
-        string_rendered = font.render(line, 1, (98, 99, 155))
-        intro_rect = string_rendered.get_rect()
-        text_coord += distance_text
-        intro_rect.top = text_coord
-        intro_rect.x = curr_x + 23
-        text_coord += intro_rect.height
-        surface.blit(string_rendered, intro_rect)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
-                if curr_x <= x <= curr_x + rect_w and 100 <= y <= 100 + rect_h:  # 100 - самый первый у для прямоугольников
-                    return 'map1.txt'
-                elif curr_x <= x <= curr_x + rect_w and curr_y - distance_rect <= y <= curr_y + rect_h:
-                    return 'map2.txt'
+                return
         pygame.display.flip()
 
 
-def passed_the_level_screen(surface, width, height):
+def passed_the_level_screen(surface, width, height, count):
     pass
 
 
@@ -530,29 +501,42 @@ def start_game():
 
 if __name__ == '__main__':
     running = True
+    player_died = False
+    new_game = False
     clock = pygame.time.Clock()
 
-    # мне кажется в этом создании миллиона групп явно что-то не так
-    tiles_group = pygame.sprite.Group()
-    walls_group = pygame.sprite.Group()
-    player_group = pygame.sprite.Group()
-    ladders_group = pygame.sprite.Group()
-    fire_group = pygame.sprite.Group()
-    saw_group = pygame.sprite.Group()
-    enemy_group = pygame.sprite.Group()
-    all_sprites = pygame.sprite.Group()
-    stars_group = pygame.sprite.Group()
+    while True:
+        # мне кажется в этом создании миллиона групп явно что-то не так
+        tiles_group = pygame.sprite.Group()
+        walls_group = pygame.sprite.Group()
+        player_group = pygame.sprite.Group()
+        ladders_group = pygame.sprite.Group()
+        fire_group = pygame.sprite.Group()
+        saw_group = pygame.sprite.Group()
+        enemy_group = pygame.sprite.Group()
+        all_sprites = pygame.sprite.Group()
+        stars_group = pygame.sprite.Group()
 
-    try:
-        # map_name = level_selection(screen, WIDTH, HEIGHT)
-        map_name = 'map1.txt'
-        player, level_x, level_y = generate_level(load_level(map_name))
-        camera = Camera()
-        move_type = None
-    except FileNotFoundError:
-        print('Файл не найден')
-        sys.exit()
+        try:
+            map_name = level_selection(screen, WIDTH, HEIGHT)
+            player, level_x, level_y = generate_level(load_level(map_name))
+            camera = Camera()
+            move_type = None
+        except FileNotFoundError:
+            print('Файл не найден')
+            sys.exit()
 
-    pygame.mixer.music.play(-1)
-    while running:
-        start_game()
+        pygame.mixer.music.load("data/sounds/game_music.mp3")
+        pygame.mixer.music.play(-1)
+        while running:
+            start_game()
+            if player_died:
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load("data/sounds/game_over.mp3")
+                pygame.mixer.music.play(0)
+
+                screen_of_death(screen, WIDTH, HEIGHT)
+                player_died = False
+                new_game = True
+                level_selection(screen, WIDTH, HEIGHT)
+                break
