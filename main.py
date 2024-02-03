@@ -464,6 +464,10 @@ def screen_of_death(surface, width, height):
         pygame.display.flip()
 
 
+def passed_the_level_screen(surface, width, height):
+    pass
+
+
 def start_game():
     global running, move_type
     screen.fill('black')
