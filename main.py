@@ -1,14 +1,9 @@
 import os
 import sys
 from random import randrange
+from consts import *
 
 import pygame
-
-FPS = 30
-SIZE = WIDTH, HEIGHT = 600, 450
-tile_width, tile_height = 45, 45
-GRAVITY = 0.7
-jump_power = tile_width * 1.7
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
