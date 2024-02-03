@@ -158,12 +158,14 @@ class Player(pygame.sprite.Sprite):
 
     def hurt(self):
         self.health -= 0.1
+        hurt_sound.play()
         self.status.append('hurt_l' if '_l' in self.status[-2] else 'hurt')
 
     def check_stars(self):
         for star in stars_group:
             if pygame.sprite.collide_mask(self, star):
                 self.star_cnt += 1
+                get_star_sound.play()
                 star.kill()
 
     def update(self, move_type):
@@ -251,6 +253,7 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.rect.y += 2
         if pygame.sprite.spritecollideany(self, tiles_group):
+            jump_sound.play()
             self.is_jump = True
             self.vy = 1
             self.jump_cnt = 0
@@ -294,6 +297,7 @@ class Player(pygame.sprite.Sprite):
     def attack(self):
         for enemy in enemy_group:
             if abs(enemy.rect.x - self.rect.x) <= 40:
+                sword_hit_sound.play()
                 enemy.health -= self.damage
             if enemy.health <= 0:
                 enemy.kill()
