@@ -451,8 +451,45 @@ def screen_of_death(surface, width, height):
         pygame.display.flip()
 
 
-def passed_the_level_screen(surface, width, height, count):
-    pass
+def passed_the_level(surface, width, height):
+    '''1 уровень прошли ура'''
+    intro_text = ['Следующий уровень',
+                  'Закрыть']
+
+    fon = pygame.transform.scale(load_image('other/background.png'), (width, height))
+    surface.blit(fon, (0, 0))
+
+    curr_x, curr_y = 150, 200
+    rect_w, rect_h = 250, 40
+    distance_rect = 60
+    for i in range(2):
+        rect = pygame.Rect(curr_x, curr_y, rect_w, rect_h)
+        pygame.draw.rect(surface, pygame.Color('dark blue'), rect, 0)
+        curr_y += distance_rect
+
+    font = pygame.font.Font(None, 30)
+    text_coord = 170
+    distance_text = 40
+    for line in intro_text:
+        string_rendered = font.render(line, 1, (98, 99, 155))
+        intro_rect = string_rendered.get_rect()
+        text_coord += distance_text
+        intro_rect.top = text_coord
+        intro_rect.x = curr_x + 23
+        text_coord += intro_rect.height
+        surface.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if curr_x <= x <= curr_x + rect_w and 200 <= y <= 200 + rect_h:
+                    return 'map2.txt'
+                elif curr_x <= x <= curr_x + rect_w and curr_y - distance_rect <= y <= curr_y + rect_h:
+                    terminate()
+        pygame.display.flip()
 
 
 def start_game():
@@ -502,7 +539,7 @@ def start_game():
 if __name__ == '__main__':
     running = True
     player_died = False
-    new_game = False
+    second_level = False
     clock = pygame.time.Clock()
 
     while True:
@@ -518,7 +555,8 @@ if __name__ == '__main__':
         stars_group = pygame.sprite.Group()
 
         try:
-            map_name = level_selection(screen, WIDTH, HEIGHT)
+            map_name = level_selection(screen, WIDTH, HEIGHT) if not second_level else passed_the_level(screen, WIDTH,
+                                                                                                        HEIGHT)
             player, level_x, level_y = generate_level(load_level(map_name))
             camera = Camera()
             move_type = None
@@ -537,6 +575,5 @@ if __name__ == '__main__':
 
                 screen_of_death(screen, WIDTH, HEIGHT)
                 player_died = False
-                new_game = True
                 level_selection(screen, WIDTH, HEIGHT)
                 break
