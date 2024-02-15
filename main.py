@@ -61,6 +61,8 @@ def generate_level(level):
                 Star(x, y)
             elif level[y][x] == '@':
                 xp, yp = x * w, y * h
+            elif level[y][x] == 'n':
+                Tile('heart', x, y, w, h)
     # вернем игрока, а также размер поля в клетках
     new_player = Player()
     return new_player, x, y
@@ -72,7 +74,8 @@ tile_images = {
     'fire': load_image('tiles/fire.png'),
     'ladder': load_image('tiles/ladder.png'),
     'platform': load_image('tiles/platforms.png'),
-    'saw': load_image('tiles/saw.png')
+    'saw': load_image('tiles/saw.png'),
+    'heart': load_image('other/heart.png')
 }
 
 
@@ -87,6 +90,8 @@ class Tile(pygame.sprite.Sprite):
             super().__init__(tiles_group, all_sprites, saw_group)
         elif tile_type == 'ladder':
             super().__init__(tiles_group, all_sprites, ladders_group)
+        elif tile_type == 'heart':
+            super().__init__(tiles_group, all_sprites, end_of_level_group)
         else:
             super().__init__(tiles_group, all_sprites)
         self.image = pygame.transform.scale(tile_images[tile_type], (tile_width, tile_height))
@@ -217,6 +222,7 @@ class Player(pygame.sprite.Sprite):
         self.cur_frame = self.frames[self.status[-1]][self.frames_cnt % len(self.frames[self.status[-1]])]
         self.image = self.cur_frame
         self.status.append('stand' if self.status[-1][-1] != 'l' else 'stand_l')
+        self.check_end_of_level()
 
     def step_right(self):
         old = self.rect.copy()
@@ -301,6 +307,11 @@ class Player(pygame.sprite.Sprite):
                 enemy.health -= self.damage
             if enemy.health <= 0:
                 enemy.kill()
+
+    def check_end_of_level(self):
+        if pygame.sprite.spritecollideany(self, end_of_level_group):
+            global second_level
+            second_level = True
 
 
 def draw_health(obj: Player):
@@ -486,10 +497,24 @@ def passed_the_level(surface, width, height):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if curr_x <= x <= curr_x + rect_w and 200 <= y <= 200 + rect_h:
-                    return 'map2.txt'
+                    global second_level, map_name
+                    second_level = True
+                    return
                 elif curr_x <= x <= curr_x + rect_w and curr_y - distance_rect <= y <= curr_y + rect_h:
                     terminate()
         pygame.display.flip()
+
+
+def count_results():
+    screen.fill('black')
+    fon = pygame.transform.scale(load_image('other/background.png'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+
 
 
 def start_game():
@@ -553,10 +578,15 @@ if __name__ == '__main__':
         enemy_group = pygame.sprite.Group()
         all_sprites = pygame.sprite.Group()
         stars_group = pygame.sprite.Group()
+        end_of_level_group = pygame.sprite.Group()
 
         try:
             map_name = level_selection(screen, WIDTH, HEIGHT) if not second_level else passed_the_level(screen, WIDTH,
                                                                                                         HEIGHT)
+            map_name = 'map2.txt' if second_level else 'map1.txt'
+            running = True
+            player_died = False
+            second_level = False
             player, level_x, level_y = generate_level(load_level(map_name))
             camera = Camera()
             move_type = None
@@ -576,4 +606,6 @@ if __name__ == '__main__':
                 screen_of_death(screen, WIDTH, HEIGHT)
                 player_died = False
                 level_selection(screen, WIDTH, HEIGHT)
+                break
+            if second_level:
                 break
