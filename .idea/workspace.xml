@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2ec00496-4d7a-4004-85a5-830fc4289917" name="Changes" comment="все я заколебалась">
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="f43d7f50-ad60-45fa-b1ee-96266645c0bd" />
+        <option name="url" value="https://github.com/alinaramilevna/pygame-project.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2bUpnuxNnCsqfjDXoZ7hhmIVZOO" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ПК/PycharmProjects/pygame_project_alina/data/sounds&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ПК\PycharmProjects\pygame_project_alina\data\sounds" />
+      <recent name="C:\Users\ПК\PycharmProjects\pygame_project_alina\data" />
+      <recent name="C:\Users\ПК\PycharmProjects\pygame_project_alina" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2ec00496-4d7a-4004-85a5-830fc4289917" name="Changes" comment="" />
+      <created>1706279681855</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1706279681855</updated>
+    </task>
+    <task id="LOCAL-00001" summary="первый коммит? нет, не первый, я просто в прошлом репозитории накосячила">
+      <created>1706279872976</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1706279872976</updated>
+    </task>
+    <task id="LOCAL-00002" summary="пофиксила коллизии по х, сделала пересечение по маске">
+      <created>1706353923474</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1706353923474</updated>
+    </task>
+    <task id="LOCAL-00003" summary="понятия не имею, что изменилось, но пусть коммитнеться">
+      <created>1706377564836</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1706377564836</updated>
+    </task>
+    <task id="LOCAL-00004" summary="физика исправлена полностью">
+      <created>1706527945376</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1706527945376</updated>
+    </task>
+    <task id="LOCAL-00005" summary="физика исправлена полностью">
+      <created>1706528457982</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1706528457982</updated>
+    </task>
+    <task id="LOCAL-00006" summary="норм пока ничего не сделала ну и не надо">
+      <created>1706976674093</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1706976674093</updated>
+    </task>
+    <task id="LOCAL-00007" summary="возвращение звезд, фоновая музычка">
+      <created>1706978721570</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1706978721570</updated>
+    </task>
+    <task id="LOCAL-00008" summary="сделала файл с константами(слава богу хоть что то убрала из main)">
+      <created>1706981056963</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1706981056963</updated>
+    </task>
+    <task id="LOCAL-00009" summary="добавила музыку ураааааааа">
+      <created>1706983905397</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1706983905397</updated>
+    </task>
+    <task id="LOCAL-00010" summary="добавила смерть персонажа, теперь после смерти оно закидыват заново в новую игру в тот же уровень">
+      <created>1706985749211</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1706985749211</updated>
+    </task>
+    <task id="LOCAL-00011" summary="с горем пополам добавила 2 уровень">
+      <created>1707032989207</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1707032989207</updated>
+    </task>
+    <task id="LOCAL-00012" summary="что то похожее">
+      <created>1708019782265</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1708019782265</updated>
+    </task>
+    <task id="LOCAL-00013" summary="все я заколебалась">
+      <created>1708020334802</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1708020334802</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="первый коммит? нет, не первый, я просто в прошлом репозитории накосячила" />
+    <MESSAGE value="пофиксила коллизии по х, сделала пересечение по маске" />
+    <MESSAGE value="понятия не имею, что изменилось, но пусть коммитнеться" />
+    <MESSAGE value="физика исправлена полностью" />
+    <MESSAGE value="норм пока ничего не сделала ну и не надо" />
+    <MESSAGE value="возвращение звезд, фоновая музычка" />
+    <MESSAGE value="сделала файл с константами(слава богу хоть что то убрала из main)" />
+    <MESSAGE value="добавила музыку ураааааааа" />
+    <MESSAGE value="добавила смерть персонажа, теперь после смерти оно закидыват заново в новую игру в тот же уровень" />
+    <MESSAGE value="с горем пополам добавила 2 уровень" />
+    <MESSAGE value="что то похожее" />
+    <MESSAGE value="все я заколебалась" />
+    <option name="LAST_COMMIT_MESSAGE" value="все я заколебалась" />
+  </component>
+</project>
