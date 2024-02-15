@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2ec00496-4d7a-4004-85a5-830fc4289917" name="Changes" comment="все я заколебалась окончательно, хочу забыть про пайгейм как про страшный сон и перейти к вебу">
-      <change afterPath="$PROJECT_DIR$/ТЗ" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="2ec00496-4d7a-4004-85a5-830fc4289917" name="Changes" comment="тз написала ура" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -181,7 +178,14 @@
       <option name="project" value="LOCAL" />
       <updated>1708020955642</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="тз написала ура">
+      <created>1708021376469</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1708021376469</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -221,6 +225,7 @@
     <MESSAGE value="что то похожее" />
     <MESSAGE value="все я заколебалась" />
     <MESSAGE value="все я заколебалась окончательно, хочу забыть про пайгейм как про страшный сон и перейти к вебу" />
-    <option name="LAST_COMMIT_MESSAGE" value="все я заколебалась окончательно, хочу забыть про пайгейм как про страшный сон и перейти к вебу" />
+    <MESSAGE value="тз написала ура" />
+    <option name="LAST_COMMIT_MESSAGE" value="тз написала ура" />
   </component>
 </project>
