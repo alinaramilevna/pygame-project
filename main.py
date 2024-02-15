@@ -445,6 +445,8 @@ def level_selection(surface, width, height):
                 if curr_x <= x <= curr_x + rect_w and 100 <= y <= 100 + rect_h:  # 100 - самый первый у для прямоугольников
                     return 'map1.txt'
                 elif curr_x <= x <= curr_x + rect_w and curr_y - distance_rect <= y <= curr_y + rect_h:
+                    global second_level
+                    second_level = True
                     return 'map2.txt'
         pygame.display.flip()
 
