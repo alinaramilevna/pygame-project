@@ -386,8 +386,8 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Star(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__(stars_group)
+    def __init__(self, pos_x, pos_y, *groups):
+        super().__init__(stars_group, *groups)
         self.image = pygame.transform.scale(load_image('other/star.png'), (tile_height // 2, tile_width // 2))
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
@@ -465,7 +465,8 @@ def screen_of_death(surface, width, height):
 def passed_the_level(surface, width, height):
     '''1 уровень прошли ура'''
     intro_text = ['Следующий уровень',
-                  'Закрыть']
+                  'Закрыть',
+                  f'Ваш счет: {player.star_cnt}/3']
 
     fon = pygame.transform.scale(load_image('other/background.png'), (width, height))
     surface.blit(fon, (0, 0))
@@ -513,8 +514,6 @@ def count_results():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-
-
 
 
 def start_game():
